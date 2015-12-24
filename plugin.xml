@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0" id="xwang.cordova.umeng.push" version="0.0.1">
+	<name>UmengPush</name>
+	<description>A cordova plugin, a JS version of Umeng Push SDK</description>
+	<licience>MIT</licience>
+	<keywords>cordova,umeng,push</keywords>
+	<repo>https://github.com/hkizuna/cordova-plugin-umeng-push.git</repo>
+	<issue>https://github.com/hkizuna/cordova-plugin-umeng-push/issues</issue>
+
+	<!-- <preference name="UMENGPUSHAPPID" value="YOUR_UMENG_PUSH_APP_ID_HERE" /> -->
+	<preference name="UMENGPUSHAPPID" />
+	<!-- required cordova version -->
+	<engines>
+		<engine name="cordova" version=">=3.9.2" />
+	</engines>
+	<!-- js module -->
+	<js-module src="www/umeng-push.js" name="UmengPush">
+		<clobbers target="UmengPush" />
+	</js-module>
+
+	<!-- ios -->
+	<platform name="ios">
+		<config-file target="config.xml" parent="/*">
+			<feature name="UmengPush">
+				<param name="ios-package" value="CDVUmengPush" />
+				<param name="onload" value="true" />
+			</feature>
+			<preference name="UMENGPUSHAPPID" value="$UMENGPUSHAPPID" />
+		</config-file>
+
+		<!-- plugin source code -->
+		<header-file src="src/ios/CDVUmengPush.h" />
+		<source-file src="src/ios/CDVUmengPush.m" />
+		<header-file src="src/ios/AppDelegate+UmengPush.h" />
+		<source-file src="src/ios/AppDelegate+UmengPush.m" />
+
+		<!-- umeng push -->
+		<header-file src="src/ios/libs/UMessage_Sdk_1.2.2/UMessage.h" />
+		<source-file src="src/ios/libs/UMessage_Sdk_1.2.2/libUMessage_Sdk_1.2.2.a" framework="true" />
+
+		<!-- other required frameworks -->
+		<framework src="libz.dylib" />
+	</platform>
+</plugin>
