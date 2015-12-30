@@ -20,7 +20,7 @@
 	{
 		self.umengPushAppId = appId;
 	}
-    
+
 	[[NSNotificationCenter defaultCenter]addObserver:self
                            					selector:@selector(applicationDidFinishLaunching:)
                                					name:UIApplicationDidFinishLaunchingNotification
@@ -40,22 +40,22 @@
             acceptAction.identifier = @"okAction_identifier";
             acceptAction.title=@"Accept";
             acceptAction.activationMode = UIUserNotificationActivationModeForeground;
-            
+
             UIMutableUserNotificationAction *rejectAction = [[UIMutableUserNotificationAction alloc] init];
             rejectAction.identifier = @"cancelAction_identifier";
             rejectAction.title=@"Reject";
             rejectAction.activationMode = UIUserNotificationActivationModeBackground;
             rejectAction.authenticationRequired = YES;
             rejectAction.destructive = YES;
-            
+
             UIMutableUserNotificationCategory *category = [[UIMutableUserNotificationCategory alloc] init];
             category.identifier = @"category_identifier";
             [category setActions:@[acceptAction,rejectAction] forContext:(UIUserNotificationActionContextDefault)];
-            
+
             UIUserNotificationSettings *userSettings = [UIUserNotificationSettings settingsForTypes:UIUserNotificationTypeBadge|UIUserNotificationTypeSound|UIUserNotificationTypeAlert
                                                                                          categories:[NSSet setWithObject:category]];
             [UMessage registerRemoteNotificationAndUserNotificationSettings:userSettings];
-            
+
         } else
         {
             [UMessage registerForRemoteNotificationTypes:UIRemoteNotificationTypeBadge|UIRemoteNotificationTypeSound|UIRemoteNotificationTypeAlert];
@@ -123,7 +123,7 @@
 		}
 		else
 		{
-			[self failWithCallbackId:command.callbackId withError:error];	
+			[self failWithCallbackId:command.callbackId withError:error];
 		}
 	  }];
 }
@@ -152,7 +152,7 @@
 	}
 
 	[UMessage addAlias:[arguments objectAtIndex:0]
-				  type:[self mapUMessageAliasType:[[arguments objectAtIndex:1] integerValue]]
+				  type:[[arguments objectAtIndex:1] isKindOfClass:[NSString class]]?[arguments objectAtIndex:1]:[self mapUMessageAliasType:[[arguments objectAtIndex:1] integerValue]]
 			  response:^(id responseObject, NSError *error) {
 			  	if (responseObject)
 				{
@@ -175,7 +175,7 @@
 	}
 
 	[UMessage setAlias:[arguments objectAtIndex:0]
-				  type:[self mapUMessageAliasType:[[arguments objectAtIndex:1] integerValue]]
+                  type:[[arguments objectAtIndex:1] isKindOfClass:[NSString class]]?[arguments objectAtIndex:1]:[self mapUMessageAliasType:[[arguments objectAtIndex:1] integerValue]]
 			  response:^(id responseObject, NSError *error) {
 			  	if (responseObject)
 				{
@@ -198,7 +198,7 @@
 	}
 
 	[UMessage removeAlias:[arguments objectAtIndex:0]
-				  type:[self mapUMessageAliasType:[[arguments objectAtIndex:1] integerValue]]
+				  type:[[arguments objectAtIndex:1] isKindOfClass:[NSString class]]?[arguments objectAtIndex:1]:[self mapUMessageAliasType:[[arguments objectAtIndex:1] integerValue]]
 			  response:^(id responseObject, NSError *error) {
 			  	if (responseObject)
 				{
