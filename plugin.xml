@@ -8,8 +8,9 @@
 	<repo>https://github.com/hkizuna/cordova-plugin-umeng-push.git</repo>
 	<issue>https://github.com/hkizuna/cordova-plugin-umeng-push/issues</issue>
 
-	<!-- <preference name="UMENGPUSHAPPID" value="YOUR_UMENG_PUSH_APP_ID_HERE" /> -->
-	<preference name="UMENGPUSHAPPID" />
+	<preference name="UMENGIOSAPPID" />
+	<preference name="UMENGANDROIDAPPID" />
+	<preference name="UMENGMESSAGESECRET" />
 	<!-- required cordova version -->
 	<engines>
 		<engine name="cordova" version=">=3.9.2" />
@@ -26,7 +27,7 @@
 				<param name="ios-package" value="CDVUmengPush" />
 				<param name="onload" value="true" />
 			</feature>
-			<preference name="UMENGPUSHAPPID" value="$UMENGPUSHAPPID" />
+			<preference name="UMENGPUSHAPPID" value="$UMENGIOSAPPID" />
 		</config-file>
 
 		<!-- plugin source code -->
@@ -41,5 +42,165 @@
 
 		<!-- other required frameworks -->
 		<framework src="libz.dylib" />
+	</platform>
+
+	<!-- android -->
+	<platform name="android">
+		<hook type="after_plugin_add" src="scripts/androidInstall.js" />
+
+		<config-file target="res/xml/config.xml" parent="/*">
+            <feature name="UmengPush">
+                <param name="android-package" value="xwang.cordova.umeng.push.UmengPush"/>
+                <param name="onload" value="true" />
+            </feature>
+            <preference name="UMENGPUSHAPPID" value="$UMENGANDROIDAPPID"/>
+            <preference name="UMENGMESSAGESECRET" value="$UMENGMESSAGESECRET"/>
+        </config-file>
+
+		<config-file target="AndroidManifest.xml" parent="/*">
+			<!-- 必选 -->
+			<uses-permission android:name="android.permission.INTERNET" />
+			<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+			<uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+			<uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
+			<uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+			<uses-permission android:name="android.permission.READ_PHONE_STATE" />
+			<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+			<uses-permission android:name="android.permission.WAKE_LOCK" />
+			<uses-permission android:name="android.permission.VIBRATE" />
+			<uses-permission android:name="android.permission.WRITE_SETTINGS" />
+			<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
+			<!--【必选】用以设置前台是否显示通知-->
+			<uses-permission android:name="android.permission.GET_TASKS" />
+
+			<!-- 可选 -->
+			<uses-permission android:name="android.permission.BROADCAST_PACKAGE_ADDED" />
+			<uses-permission android:name="android.permission.BROADCAST_PACKAGE_CHANGED" />
+			<uses-permission android:name="android.permission.BROADCAST_PACKAGE_INSTALL" />
+			<uses-permission android:name="android.permission.BROADCAST_PACKAGE_REPLACED" />
+			<uses-permission android:name="android.permission.RESTART_PACKAGES" />
+			<uses-permission android:name="android.permission.GET_ACCOUNTS" />
+		</config-file>
+
+		<config-file target="AndroidManifest.xml" parent="/manifest/application">
+			<meta-data android:name="UMENG_APPKEY" android:value="$UMENGANDROIDAPPID">
+			</meta-data>
+			<meta-data android:name="UMENG_MESSAGE_SECRET" android:value="$UMENGMESSAGESECRET">
+			</meta-data>
+
+			<!-- 监听通知点击或者忽略处理的广播 -->
+			<receiver android:name="com.umeng.message.NotificationProxyBroadcastReceiver" android:exported="false">
+			</receiver>
+
+			<!-- 监听开机运行、网络连接变化、卸载的广播 -->
+			<receiver android:name="com.umeng.message.SystemReceiver" android:process=":push">
+			    <intent-filter>
+			        <action android:name="android.intent.action.BOOT_COMPLETED" />
+			    </intent-filter>
+			    <intent-filter>
+			        <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+			    </intent-filter>
+			    <intent-filter>
+					<action android:name="android.intent.action.PACKAGE_REMOVED" />
+			        <data android:scheme="package" />
+			    </intent-filter>
+			</receiver>
+
+			<!-- 监听消息到达的广播 -->
+			<receiver android:name="com.umeng.message.MessageReceiver" android:exported="false" android:process=":push">
+			    <intent-filter>
+			        <action android:name="org.agoo.android.intent.action.RECEIVE" />
+			    </intent-filter>
+			</receiver>
+
+			<!-- 监听宿主选举的广播 -->
+			<receiver android:name="com.umeng.message.ElectionReceiver" android:process=":push">
+			    <intent-filter>
+			        <action android:name="org.agoo.android.intent.action.ELECTION_RESULT_V4" />
+			        <category android:name="umeng" />
+			    </intent-filter>
+			</receiver>
+
+			<!-- 监听注册的广播 -->
+			<receiver android:name="com.umeng.message.RegistrationReceiver" android:exported="false">
+			    <intent-filter>
+			        <action android:name="__PACKAGE_NAME__.intent.action.COMMAND" />
+			    </intent-filter>
+			</receiver>
+			<receiver android:name="com.umeng.message.UmengMessageBootReceiver" >
+			    <intent-filter>
+			        <action android:name="android.intent.action.BOOT_COMPLETED" />
+			    </intent-filter>
+			</receiver>
+
+			<!-- Umeng的长连服务，用来建立推送的长连接的 -->
+			<service android:name="com.umeng.message.UmengService" android:label="PushService" android:exported="true" android:process=":push">
+			    <intent-filter>
+			        <action android:name="__PACKAGE_NAME__.intent.action.START" />
+			    </intent-filter>
+			    <intent-filter>
+			        <action android:name="__PACKAGE_NAME__.intent.action.COCKROACH" />
+			    </intent-filter>
+			    <intent-filter>
+			        <action android:name="org.agoo.android.intent.action.PING_V4" />
+			    <category android:name="umeng" />
+			    </intent-filter>
+			</service>
+
+			<!-- Umeng的消息接收服务 -->
+			<service android:name="com.umeng.message.UmengIntentService" android:process=":push" />
+
+			<!-- Umeng的消息路由服务 -->
+			<service android:name="com.umeng.message.UmengMessageIntentReceiverService" android:process=":push" android:exported="true">
+			    <intent-filter>
+			        <action android:name="org.android.agoo.client.MessageReceiverService" />
+			    </intent-filter>
+			    <intent-filter>
+			        <action android:name="org.android.agoo.client.ElectionReceiverService" />
+			    </intent-filter>
+			</service>
+
+			<!-- v2.4.1添加的Service，Umeng的消息接收后的处理服务 -->
+			<service android:name="com.umeng.message.UmengMessageCallbackHandlerService" android:exported="false">
+			    <intent-filter>
+			        <action android:name="com.umeng.messge.registercallback.action" />
+			    </intent-filter>
+			    <intent-filter>
+			        <action android:name="com.umeng.message.unregistercallback.action"/>
+			    </intent-filter>
+			    <intent-filter>
+			        <action android:name="com.umeng.message.message.handler.action"/>
+			    </intent-filter>
+			    <intent-filter>
+			        <action android:name="com.umeng.message.autoupdate.handler.action"/>
+			    </intent-filter>
+			</service>
+
+			<!-- V1.3.0添加的service，负责下载通知的资源 -->
+			<service android:name="com.umeng.message.UmengDownloadResourceService" />
+
+			<!-- V2.5.0添加的Service，用于本地通知 -->
+			<!-- 如果不使用本地通知，可以注释掉本地通知服务的配置 -->
+			<service android:name="com.umeng.message.local.UmengLocalNotificationService" android:exported="false" />
+		</config-file>
+
+		<source-file src="src/android/UmengPush.java" target-dir="src/xwang/cordova/umeng/push" />
+		<source-file src="src/android/libs/com.umeng.message.lib_v2.6.0.jar" target-dir="libs" />
+		<source-file src="src/android/libs/android-support-v4.jar" target-dir="libs" />
+		<source-file src="src/android/libs/arm64-v8a/libcocklogic.so" target-dir="libs/arm64-v8a" />
+		<source-file src="src/android/libs/arm64-v8a/libtnet-2.1.20.1-agoo.so" target-dir="libs/arm64-v8a" />
+		<source-file src="src/android/libs/armeabi/libcocklogic.so" target-dir="libs/armeabi" />
+		<source-file src="src/android/libs/armeabi/libtnet-2.1.20.1-agoo.so" target-dir="libs/armeabi" />
+		<source-file src="src/android/libs/armeabi-v7a/libcocklogic.so" target-dir="libs/armeabi-v7a" />
+		<source-file src="src/android/libs/armeabi-v7a/libtnet-2.1.20.1-agoo.so" target-dir="libs/armeabi-v7a" />
+		<source-file src="src/android/libs/mips/libcocklogic.so" target-dir="libs/mips" />
+		<source-file src="src/android/libs/mips/libtnet-2.1.20.1-agoo.so" target-dir="libs/mips" />
+		<source-file src="src/android/libs/mips64/libcocklogic.so" target-dir="libs/mips64" />
+		<source-file src="src/android/libs/mips64/libtnet-2.1.20.1-agoo.so" target-dir="libs/mips64" />
+		<source-file src="src/android/libs/x86/libcocklogic.so" target-dir="libs/x86" />
+		<source-file src="src/android/libs/x86/libtnet-2.1.20.1-agoo.so" target-dir="libs/x86" />
+		<source-file src="src/android/libs/x86_64/libcocklogic.so" target-dir="libs/x86_64" />
+		<source-file src="src/android/libs/x86_64/libtnet-2.1.20.1-agoo.so" target-dir="libs/x86_64" />
 	</platform>
 </plugin>

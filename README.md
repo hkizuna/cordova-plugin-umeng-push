@@ -4,13 +4,13 @@ A cordova plugin, a JS version of Umeng Push SDK
 
 # Install
 
-1. ```cordova plugin add https://github.com/hkizuna/cordova-plugin-umeng-push  --variable umengpushappid=your_umengpushappid```
+1. ```cordova plugin add https://github.com/hkizuna/cordova-plugin-umeng-push  --variable umengiosappid=your_umengiosappid --variable umengandroidappid=your_umengandroidappid --variable umengmessagesecret=your_umengmessagesecret```
 
-2. ```cordova build ios```
+2. ```cordova build ios``` or ```cordova build android```
 
 # TODO
 
-1. Add android version
+1. ~~Add android version~~
 
 2. Other APIs
 
