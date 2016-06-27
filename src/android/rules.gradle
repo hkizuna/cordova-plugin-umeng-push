@@ -1,0 +1,11 @@
+// Allow plugins to declare Maven dependencies via build-extras.gradle.
+repositories {
+  mavenCentral()
+  flatDir {
+    dirs 'libs'
+  }
+}
+dependencies {
+  compile project(':PushSDK')
+  // SUB-PROJECT DEPENDENCIES END
+}

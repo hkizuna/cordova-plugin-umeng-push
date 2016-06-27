@@ -16,7 +16,7 @@ module.exports = function (context) {
   var config      = new ConfigParser(path.join(context.opts.projectRoot, "config.xml")),
       packageName = config.android_packageName() || config.packageName();
 
-  console.info("Running afterPluginAdd.Hook: " + context.hook + ", Package: " + packageName + ", Path: " + projectRoot + ".");
+  console.info("Running before_plugin_uninstall.Hook: " + context.hook + ", Package: " + packageName + ", Path: " + projectRoot + ".");
 
   if (!packageName) {
     console.error("Package name could not be found!");
@@ -28,29 +28,14 @@ module.exports = function (context) {
     return;
   }
 
-  var pushSDKAndroidManifestPath = path.join(projectRoot, "platforms", "android", "PushSDK/AndroidManifest.xml");
-  var pluginPushSDKAndroidManifestPath = path.join(context.opts.plugin.dir, "src/android/PushSDK/AndroidManifest.xml");
-  var targets = [pushSDKAndroidManifestPath, pluginPushSDKAndroidManifestPath];
-
-  targets.forEach(function (f) {
-    fs.readFile(f, {encoding: 'utf-8'}, function (err, data) {
-      if (err) {
-          throw err;
-      }
-
-      data = data.replace(/__PACKAGE_NAME__/g, packageName);
-      fs.writeFileSync(f, data, "utf-8");
-    });
-  });
-
   var cordovaGradleBuilderPath = path.join(projectRoot, "platforms", "android", "cordova", "lib", "builders", "GradleBuilder.js");
   fs.readFile(cordovaGradleBuilderPath, {encoding: 'utf-8'}, function (err, data) {
     if (err) {
       throw err;
     }
 
-    var regex = /GENERATED FILE - DO NOT EDIT\\n/g;
-    var str = 'GENERATED FILE - DO NOT EDIT\\ninclude ":PushSDK"\\n'
+    var regex = /GENERATED FILE - DO NOT EDIT\\ninclude ":PushSDK"\\n/g;
+    var str = 'GENERATED FILE - DO NOT EDIT\\n';
 
     data = data.replace(regex, str);
     fs.writeFileSync(cordovaGradleBuilderPath, data, "utf-8");
