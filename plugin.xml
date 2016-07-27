@@ -46,7 +46,7 @@
 
 	<!-- android -->
 	<platform name="android">
-		<hook type="after_plugin_add" src="scripts/androidInstall.js" />
+		<hook type="after_plugin_install" src="scripts/androidInstall.js" />
 		<hook type="before_plugin_uninstall" src="scripts/androidUninstall.js" />
 		<config-file target="res/xml/config.xml" parent="/*">
       <feature name="UmengPush">
