@@ -8,6 +8,8 @@ A cordova plugin, a JS version of Umeng Push SDK
 
 2. ```cordova build ios``` or ```cordova build android```
 
+3. Turn on ```Target -> Capabilities -> Push Notifications```
+
 # TODO
 
 1. ~~Add android version~~
