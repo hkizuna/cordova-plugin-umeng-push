@@ -7,8 +7,9 @@
 
 #import "CDVUmengPush.h"
 #import "UMessage.h"
-
-#define UMSYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
+#import <UserNotifications/UserNotifications.h>
+#endif
 
 @implementation CDVUmengPush
 
@@ -20,11 +21,7 @@
 	{
 		self.umengPushAppId = appId;
 	}
-
-	[[NSNotificationCenter defaultCenter]addObserver:self
-                           					selector:@selector(applicationDidFinishLaunching:)
-                               					name:UIApplicationDidFinishLaunchingNotification
-                             				  object:nil];
+	[[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(applicationDidFinishLaunching:) name:UIApplicationDidFinishLaunchingNotification object:nil];
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)notification
@@ -32,38 +29,15 @@
 	NSDictionary *launchOptions = [notification userInfo];
 	if (self.umengPushAppId)
 	{
-        [UMessage startWithAppkey:self.umengPushAppId launchOptions:launchOptions];
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_8_0
-        if(UMSYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"8.0"))
-        {
-            UIMutableUserNotificationAction *acceptAction = [[UIMutableUserNotificationAction alloc] init];
-            acceptAction.identifier = @"okAction_identifier";
-            acceptAction.title=@"Accept";
-            acceptAction.activationMode = UIUserNotificationActivationModeForeground;
-
-            UIMutableUserNotificationAction *rejectAction = [[UIMutableUserNotificationAction alloc] init];
-            rejectAction.identifier = @"cancelAction_identifier";
-            rejectAction.title=@"Reject";
-            rejectAction.activationMode = UIUserNotificationActivationModeBackground;
-            rejectAction.authenticationRequired = YES;
-            rejectAction.destructive = YES;
-
-            UIMutableUserNotificationCategory *category = [[UIMutableUserNotificationCategory alloc] init];
-            category.identifier = @"category_identifier";
-            [category setActions:@[acceptAction,rejectAction] forContext:(UIUserNotificationActionContextDefault)];
-
-            UIUserNotificationSettings *userSettings = [UIUserNotificationSettings settingsForTypes:UIUserNotificationTypeBadge|UIUserNotificationTypeSound|UIUserNotificationTypeAlert
-                                                                                         categories:[NSSet setWithObject:category]];
-            [UMessage registerRemoteNotificationAndUserNotificationSettings:userSettings];
-
-        } else
-        {
-            [UMessage registerForRemoteNotificationTypes:UIRemoteNotificationTypeBadge|UIRemoteNotificationTypeSound|UIRemoteNotificationTypeAlert];
-        }
-#else
-        [UMessage registerForRemoteNotificationTypes:UIRemoteNotificationTypeBadge|UIRemoteNotificationTypeSound|UIRemoteNotificationTypeAlert];
+    [UMessage startWithAppkey:self.umengPushAppId launchOptions:launchOptions];
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
+    UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+    center.delegate = self.appDelegate;
+    UNAuthorizationOptions types10 = UNAuthorizationOptionBadge | UNAuthorizationOptionAlert | UNAuthorizationOptionSound;
+    [center requestAuthorizationWithOptions:types10 completionHandler:^(BOOL granted, NSError * _Nullable error) {}];
 #endif
-        [UMessage setLogEnabled:YES];
+    [UMessage registerForRemoteNotifications];
+    [UMessage setLogEnabled:YES];
 	}
 }
 
