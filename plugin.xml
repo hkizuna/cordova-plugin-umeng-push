@@ -1,55 +1,57 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0" id="xwang.cordova.umeng.push" version="0.0.1">
-	<name>UmengPush</name>
-	<description>A cordova plugin, a JS version of Umeng Push SDK</description>
-	<licience>MIT</licience>
-	<keywords>cordova,umeng,push</keywords>
-	<repo>https://github.com/hkizuna/cordova-plugin-umeng-push.git</repo>
-	<issue>https://github.com/hkizuna/cordova-plugin-umeng-push/issues</issue>
+  <name>UmengPush</name>
+  <description>A cordova plugin, a JS version of Umeng Push SDK</description>
+  <licience>MIT</licience>
+  <keywords>cordova,umeng,push</keywords>
+  <repo>https://github.com/hkizuna/cordova-plugin-umeng-push.git</repo>
+  <issue>https://github.com/hkizuna/cordova-plugin-umeng-push/issues</issue>
 
-	<preference name="UMENGIOSAPPID" />
-	<preference name="UMENGANDROIDAPPID" />
-	<preference name="UMENGMESSAGESECRET" />
-	<!-- required cordova version -->
-	<engines>
-		<engine name="cordova" version=">=3.9.2" />
-	</engines>
-	<!-- js module -->
-	<js-module src="www/umeng-push.js" name="UmengPush">
-		<clobbers target="UmengPush" />
-	</js-module>
+  <preference name="UMENGIOSAPPID" />
+  <preference name="UMENGANDROIDAPPID" />
+  <preference name="UMENGMESSAGESECRET" />
+  <!-- required cordova version -->
+  <engines>
+    <engine name="cordova" version=">=3.9.2" />
+  </engines>
+  <!-- js module -->
+  <js-module src="www/umeng-push.js" name="UmengPush">
+    <clobbers target="UmengPush" />
+  </js-module>
 
-	<!-- ios -->
-	<platform name="ios">
-		<config-file target="config.xml" parent="/*">
-			<feature name="UmengPush">
-				<param name="ios-package" value="CDVUmengPush" />
-				<param name="onload" value="true" />
-			</feature>
-			<preference name="UMENGPUSHAPPID" value="$UMENGIOSAPPID" />
-		</config-file>
+  <!-- ios -->
+  <platform name="ios">
+    <config-file target="config.xml" parent="/*">
+      <feature name="UmengPush">
+        <param name="ios-package" value="CDVUmengPush" />
+        <param name="onload" value="true" />
+      </feature>
+      <preference name="UMENGPUSHAPPID" value="$UMENGIOSAPPID" />
+    </config-file>
 
-		<!-- plugin source code -->
-		<header-file src="src/ios/CDVUmengPush.h" />
-		<source-file src="src/ios/CDVUmengPush.m" />
-		<header-file src="src/ios/AppDelegate+UmengPush.h" />
-		<source-file src="src/ios/AppDelegate+UmengPush.m" />
+    <!-- plugin source code -->
+    <header-file src="src/ios/CDVUmengPush.h" />
+    <source-file src="src/ios/CDVUmengPush.m" />
+    <header-file src="src/ios/AppDelegate+UmengPush.h" />
+    <source-file src="src/ios/AppDelegate+UmengPush.m" />
 
-		<!-- umeng push -->
-		<header-file src="src/ios/libs/UMessage_Sdk_1.4.0/UMessage.h" />
-		<source-file src="src/ios/libs/UMessage_Sdk_1.4.0/libUMessage_Sdk_1.4.0.a" framework="true" />
+    <!-- umeng push -->
+    <header-file src="src/ios/libs/UMessage_Sdk_1.4.0/UMessage.h" />
+    <source-file src="src/ios/libs/UMessage_Sdk_1.4.0/libUMessage_Sdk_1.4.0.a" framework="true" />
 
-		<!-- other required frameworks -->
-		<framework src="libz.dylib" />
-		<framework src="UserNotifications.framework" />
-	</platform>
+    <!-- other required frameworks -->
+    <framework src="libz.dylib" />
+    <framework src="UserNotifications.framework" />
+  </platform>
 
-	<!-- android -->
-	<platform name="android">
-		<hook type="after_plugin_add" src="scripts/androidInstall.js" />
-		<hook type="before_plugin_uninstall" src="scripts/androidUninstall.js" />
-		<config-file target="res/xml/config.xml" parent="/*">
+  <!-- android -->
+  <platform name="android">
+    <hook type="after_plugin_add" src="scripts/androidInstall.js" />
+    <hook type="after_plugin_install" src="scripts/androidInstall.js" />
+    <hook type="before_plugin_rm" src="scripts/androidUninstall.js" />
+    <hook type="before_plugin_uninstall" src="scripts/androidUninstall.js" />
+    <config-file target="res/xml/config.xml" parent="/*">
       <feature name="UmengPush">
         <param name="android-package" value="xwang.cordova.umeng.push.UmengPush"/>
         <param name="onload" value="true" />
@@ -58,15 +60,15 @@
       <preference name="UMENGMESSAGESECRET" value="$UMENGMESSAGESECRET"/>
     </config-file>
 
-		<config-file target="AndroidManifest.xml" parent="/manifest/application">
-			<meta-data android:name="UMENG_APPKEY" android:value="$UMENGANDROIDAPPID">
-			</meta-data>
-			<meta-data android:name="UMENG_MESSAGE_SECRET" android:value="$UMENGMESSAGESECRET">
-			</meta-data>
-		</config-file>
+    <config-file target="AndroidManifest.xml" parent="/manifest/application">
+      <meta-data android:name="UMENG_APPKEY" android:value="$UMENGANDROIDAPPID">
+      </meta-data>
+      <meta-data android:name="UMENG_MESSAGE_SECRET" android:value="$UMENGMESSAGESECRET">
+      </meta-data>
+    </config-file>
 
-		<source-file src="src/android/UmengPush.java" target-dir="src/xwang/cordova/umeng/push" />
-		<source-file src="src/android/PushSDK" target-dir="." />
-		<framework src="src/android/rules.gradle" custom="true" type="gradleReference" />
-	</platform>
+    <source-file src="src/android/UmengPush.java" target-dir="src/xwang/cordova/umeng/push" />
+    <source-file src="src/android/PushSDK" target-dir="." />
+    <framework src="src/android/rules.gradle" custom="true" type="gradleReference" />
+  </platform>
 </plugin>
