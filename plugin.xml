@@ -56,8 +56,6 @@
         <param name="android-package" value="xwang.cordova.umeng.push.UmengPush"/>
         <param name="onload" value="true" />
       </feature>
-      <preference name="UMENGPUSHAPPID" value="$UMENGANDROIDAPPID"/>
-      <preference name="UMENGMESSAGESECRET" value="$UMENGMESSAGESECRET"/>
     </config-file>
 
     <config-file target="AndroidManifest.xml" parent="/manifest/application">

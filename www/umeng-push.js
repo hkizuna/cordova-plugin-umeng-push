@@ -44,10 +44,6 @@ module.exports = {
 		exec(successCallback, errorCallback, "UmengPush", "addAlias", [alias, type]);
 	},
 
-	setAlias: function (alias, type, successCallback, errorCallback) {
-		exec(successCallback, errorCallback, "UmengPush", "setAlias", [alias, type]);
-	},
-
 	removeAlias: function (alias, type, successCallback, errorCallback) {
 		exec(successCallback, errorCallback, "UmengPush", "removeAlias", [alias, type]);
 	}
