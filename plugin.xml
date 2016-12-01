@@ -11,6 +11,8 @@
   <preference name="UMENGIOSAPPID" />
   <preference name="UMENGANDROIDAPPID" />
   <preference name="UMENGMESSAGESECRET" />
+  <preference name="XIAOMIAPPID" />
+  <preference name="XIAOMIAPPKEY" />
   <!-- required cordova version -->
   <engines>
     <engine name="cordova" version=">=3.9.2" />
@@ -51,24 +53,70 @@
     <hook type="after_plugin_install" src="scripts/androidInstall.js" />
     <hook type="before_plugin_rm" src="scripts/androidUninstall.js" />
     <hook type="before_plugin_uninstall" src="scripts/androidUninstall.js" />
+
     <config-file target="res/xml/config.xml" parent="/*">
       <feature name="UmengPush">
         <param name="android-package" value="xwang.cordova.umeng.push.UmengPush"/>
         <param name="onload" value="true" />
       </feature>
-      <preference name="UMENGPUSHAPPID" value="$UMENGANDROIDAPPID"/>
-      <preference name="UMENGMESSAGESECRET" value="$UMENGMESSAGESECRET"/>
+      <preference name="XIAOMIAPPID" value="$XIAOMIAPPID"/>
+      <preference name="XIAOMIAPPKEY" value="$XIAOMIAPPKEY"/>
     </config-file>
 
+    <!-- umeng push -->
     <config-file target="AndroidManifest.xml" parent="/manifest/application">
       <meta-data android:name="UMENG_APPKEY" android:value="$UMENGANDROIDAPPID">
       </meta-data>
       <meta-data android:name="UMENG_MESSAGE_SECRET" android:value="$UMENGMESSAGESECRET">
       </meta-data>
     </config-file>
-
     <source-file src="src/android/UmengPush.java" target-dir="src/xwang/cordova/umeng/push" />
     <source-file src="src/android/PushSDK" target-dir="." />
     <framework src="src/android/rules.gradle" custom="true" type="gradleReference" />
+
+    <!-- xiaomi push -->
+    <config-file target="AndroidManifest.xml" parent="/*">
+      <uses-permission android:name="android.permission.INTERNET" />
+      <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+      <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+      <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+      <uses-permission android:name="android.permission.GET_TASKS" />
+      <uses-permission android:name="android.permission.VIBRATE"/>
+      <permission android:name="$PACKAGE_NAME.permission.MIPUSH_RECEIVE" android:protectionLevel="signature" />
+      <uses-permission android:name="$PACKAGE_NAME.permission.MIPUSH_RECEIVE" />
+    </config-file>
+    <config-file target="AndroidManifest.xml" parent="/manifest/application">
+      <service android:enabled="true" android:process=":pushservice" android:name="com.xiaomi.push.service.XMPushService"/>
+      <service android:name="com.xiaomi.push.service.XMJobService" android:enabled="true" android:exported="false" android:permission="android.permission.BIND_JOB_SERVICE" android:process=":pushservice" />
+      <!--注：此service必须在3.0.1版本以后（包括3.0.1版本）加入-->
+      <service android:enabled="true" android:exported="true" android:name="com.xiaomi.mipush.sdk.PushMessageHandler" />
+      <service android:enabled="true" android:name="com.xiaomi.mipush.sdk.MessageHandleService" />
+      <!--注：此service必须在2.2.5版本以后（包括2.2.5版本）加入-->
+      <receiver android:exported="true" android:name="com.xiaomi.push.service.receivers.NetworkStatusReceiver" >
+        <intent-filter>
+          <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+          <category android:name="android.intent.category.DEFAULT" />
+        </intent-filter>
+      </receiver>
+      <receiver android:exported="false" android:process=":pushservice" android:name="com.xiaomi.push.service.receivers.PingReceiver" >
+        <intent-filter>
+          <action android:name="com.xiaomi.push.PING_TIMER" />
+        </intent-filter>
+      </receiver>
+      <receiver android:exported="true" android:name="xwang.cordova.umeng.push.XiaomiPushMessageReceiver">
+        <intent-filter>
+          <action android:name="com.xiaomi.mipush.RECEIVE_MESSAGE" />
+        </intent-filter>
+        <intent-filter>
+          <action android:name="com.xiaomi.mipush.MESSAGE_ARRIVED" />
+        </intent-filter>
+        <intent-filter>
+          <action android:name="com.xiaomi.mipush.ERROR" />
+        </intent-filter>
+      </receiver>
+    </config-file>
+    <source-file src="src/android/XiaomiPushMessageReceiver.java" target-dir="src/xwang/cordova/umeng/push" />
+    <source-file src="src/android/XiaomiUtils.java" target-dir="src/xwang/cordova/umeng/push" />
+    <source-file src="src/android/libs/MiPush_SDK_Client_3_1_2.jar" target-dir="libs" />
   </platform>
 </plugin>
