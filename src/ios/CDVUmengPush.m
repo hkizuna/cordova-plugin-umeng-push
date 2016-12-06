@@ -37,7 +37,7 @@
     [center requestAuthorizationWithOptions:types10 completionHandler:^(BOOL granted, NSError * _Nullable error) {}];
 #endif
     [UMessage registerForRemoteNotifications];
-    [UMessage setLogEnabled:YES];
+    // [UMessage setLogEnabled:YES];
 	}
 }
 

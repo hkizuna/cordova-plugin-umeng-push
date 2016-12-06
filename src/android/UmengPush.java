@@ -76,7 +76,7 @@ public class UmengPush extends CordovaPlugin {
       this.mPushAgent = PushAgent.getInstance(mContext);
       this.mPushAgent.enable();
       this.mPushAgent.onAppStart();
-      this.mPushAgent.setDebugMode(true);
+      // this.mPushAgent.setDebugMode(true);
     }
   }
 
