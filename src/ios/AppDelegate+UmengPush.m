@@ -7,6 +7,7 @@
 
 #import "AppDelegate+UmengPush.h"
 #import "UMessage.h"
+#import "CDVUmengPush.h"
 
 @implementation AppDelegate (UmengPush)
 
@@ -37,6 +38,7 @@
   [[NSNotificationCenter defaultCenter] postNotificationName:@"userInfoNotification" object:self userInfo:@{@"userinfo":[NSString stringWithFormat:@"%@",userInfo]}];
   [UMessage setAutoAlert:NO];
   [UMessage didReceiveRemoteNotification:userInfo];
+  [CDVUmengPush setPendingNotification:userInfo];
 }
 
 @end

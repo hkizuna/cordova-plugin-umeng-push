@@ -21,7 +21,10 @@ typedef NS_ENUM(NSInteger, kAliasType)
 	kAliasTypeTwitter = 9,
 };
 
-@interface CDVUmengPush:CDVPlugin
+@interface CDVUmengPush:CDVPlugin {
+  NSString *_callbackId;
+  NSDictionary *_pending;
+}
 
 @property (nonatomic, strong) NSString *umengPushAppId;
 
@@ -32,5 +35,7 @@ typedef NS_ENUM(NSInteger, kAliasType)
 - (void)addAlias:(CDVInvokedUrlCommand *)command;
 - (void)setAlias:(CDVInvokedUrlCommand *)command;
 - (void)removeAlias:(CDVInvokedUrlCommand *)command;
+- (void)getRemoteNotification:(CDVInvokedUrlCommand *)command;
++ (void)setPendingNotification:(NSDictionary *)notification;
 
 @end

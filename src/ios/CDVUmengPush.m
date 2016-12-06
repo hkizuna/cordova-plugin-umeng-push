@@ -13,9 +13,12 @@
 
 @implementation CDVUmengPush
 
+static id static_self;
+
 #pragma mark Initialization
 - (void)pluginInitialize
 {
+  static_self = self;
 	NSString* appId = [[self.commandDelegate settings] objectForKey:@"umengpushappid"];
 	if (appId)
 	{
@@ -27,6 +30,7 @@
 - (void)applicationDidFinishLaunching:(NSNotification *)notification
 {
 	NSDictionary *launchOptions = [notification userInfo];
+  _pending = launchOptions[@"UIApplicationLaunchOptionsRemoteNotificationKey"];
 	if (self.umengPushAppId)
 	{
     [UMessage startWithAppkey:self.umengPushAppId launchOptions:launchOptions];
@@ -183,6 +187,30 @@
 					[self failWithCallbackId:command.callbackId withError:error];
 				}
 			}];
+}
+
+- (void)getRemoteNotification:(CDVInvokedUrlCommand *)command
+{
+  _callbackId = command.callbackId;
+  if (_pending) {
+    [self notify:_pending];
+    _pending = nil;
+  }
+  else {
+    [self notify:@{}];
+  }
+}
+
+- (void)notify:(NSDictionary *)notification
+{
+  CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:notification];
+  [result setKeepCallbackAsBool:YES];
+  [self.commandDelegate sendPluginResult:result callbackId:_callbackId];
+}
+
++ (void)setPendingNotification:(NSDictionary *)notification
+{
+  [static_self notify:notification];
 }
 
 #pragma mark Helper Function

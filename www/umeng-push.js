@@ -1,62 +1,50 @@
-var exec = require('cordova/exec');
+var exec = require('cordova/exec'),
+    cordova = require('cordova'),
+    channel = require('cordova/channel');
 
-module.exports = {
-	AliasType: {
-		//新浪微博
-		SINA: 0,
-		//腾讯微博
-		TENCENT: 1,
-		//QQ
-		QQ: 2,
-		//微信
-		WEIXIN: 3,
-		//百度
-		BAIDU: 4,
-		//人人网
-		RENREN: 5,
-		//开心网
-		KAIXIN: 6,
-		//豆瓣
-		DOUBAN: 7,
-		//facebook
-		FACEBOOK: 8,
-		//twitter
-		TWITTER: 9
-	},
+function UmengPush() {
 
-	addTag: function (tags, successCallback, errorCallback) {
-		exec(successCallback, errorCallback, "UmengPush", "addTag", [tags]);
-	},
+}
 
-	removeTag: function (tags, successCallback, errorCallback) {
-		exec(successCallback, errorCallback, "UmengPush", "removeTag", [tags]);
-	},
-
-	getTags: function (successCallback, errorCallback) {
-		exec(successCallback, errorCallback, "UmengPush", "getTags", []);
-	},
-
-	removeAllTags: function (successCallback, errorCallback) {
-		exec(successCallback, errorCallback, "UmengPush", "removeAllTags", []);
-	},
-
-	addAlias: function (alias, type, successCallback, errorCallback) {
-		exec(successCallback, errorCallback, "UmengPush", "addAlias", [alias, type]);
-	},
-
-	setAlias: function (alias, type, successCallback, errorCallback) {
-		exec(successCallback, errorCallback, "UmengPush", "setAlias", [alias, type]);
-	},
-
-	removeAlias: function (alias, type, successCallback, errorCallback) {
-		exec(successCallback, errorCallback, "UmengPush", "removeAlias", [alias, type]);
-	}
-
-	// setLocation:
-
-	// setBadgeClear:
-
-	// setAutoAlert:
-
-	// setChannel:
+UmengPush.prototype.addTag = function(tags, successCallback, errorCallback) {
+  exec(successCallback, errorCallback, 'UmengPush', 'addTag', [tags]);
 };
+
+UmengPush.prototype.removeTag = function(tags, successCallback, errorCallback) {
+  exec(successCallback, errorCallback, 'UmengPush', 'removeTag', [tags]);
+};
+
+UmengPush.prototype.getTags = function(successCallback, errorCallback) {
+  exec(successCallback, errorCallback, 'UmengPush', 'getTags', []);
+};
+
+UmengPush.prototype.removeAllTags = function(successCallback, errorCallback) {
+  exec(successCallback, errorCallback, 'UmengPush', 'removeAllTags', []);
+};
+
+UmengPush.prototype.addAlias = function(alias, type, successCallback, errorCallback) {
+  exec(successCallback, errorCallback, 'UmengPush', 'addAlias', [alias, type]);
+};
+
+UmengPush.prototype.setAlias = function(alias, type, successCallback, errorCallback) {
+  exec(successCallback, errorCallback, 'UmengPush', 'setAlias', [alias, type]);
+};
+
+UmengPush.prototype.removeAlias = function(alias, type, successCallback, errorCallback) {
+  exec(successCallback, errorCallback, 'UmengPush', 'removeAlias', [alias, type]);
+};
+
+UmengPush.prototype.getRemoteNotification = function(successCallback, errorCallback) {
+  exec(successCallback, errorCallback, 'UmengPush', 'getRemoteNotification', []);
+};
+
+UmengPush.prototype.init = function() {
+  this.getRemoteNotification(function(notification) {
+    cordova.fireDocumentEvent('up:notify', notification);
+  },
+  function (e) {
+    console.log('Error initializing UmengPush: ' + e);
+  });
+};
+
+module.exports = new UmengPush();

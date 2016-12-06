@@ -22,6 +22,10 @@
     <clobbers target="UmengPush" />
   </js-module>
 
+  <js-module src="www/alias-type.js" name="AliasType">
+    <clobbers target="AliasType" />
+  </js-module>
+
   <!-- ios -->
   <platform name="ios">
     <config-file target="config.xml" parent="/*">
