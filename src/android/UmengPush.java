@@ -12,6 +12,8 @@ import android.util.Log;
 import com.umeng.message.ALIAS_TYPE;
 import com.umeng.message.PushAgent;
 import com.umeng.message.tag.TagManager;
+import com.umeng.message.UmengNotificationClickHandler;
+import com.umeng.message.entity.UMessage;
 
 import com.xiaomi.channel.commonutils.logger.LoggerInterface;
 import com.xiaomi.mipush.sdk.Logger;
@@ -22,6 +24,7 @@ import org.apache.cordova.CordovaArgs;
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.PluginResult;
 import org.json.JSONArray;
+import org.json.JSONObject;
 import org.json.JSONException;
 
 public class UmengPush extends CordovaPlugin {
@@ -45,6 +48,9 @@ public class UmengPush extends CordovaPlugin {
   protected boolean isMiPush;
   protected PushAgent mPushAgent;
   protected Context mContext;
+
+  private CallbackContext mCallbackContext;
+  private JSONObject pendingNotification;
 
   @Override
   protected void pluginInitialize() {
@@ -76,6 +82,25 @@ public class UmengPush extends CordovaPlugin {
       this.mPushAgent = PushAgent.getInstance(mContext);
       this.mPushAgent.enable();
       this.mPushAgent.onAppStart();
+      UmengNotificationClickHandler notificationClickHandler = new UmengNotificationClickHandler() {
+        public void launchApp(Context context, UMessage uMessage) {
+          super.launchApp(context, uMessage);
+          sendNotification(new JSONObject(uMessage.extra));
+        }
+
+        public void openUrl(Context context, UMessage uMessage) {
+          super.openUrl(context, uMessage);
+        }
+
+        public void openActivity(Context context, UMessage uMessage) {
+          super.openActivity(context, uMessage);
+        }
+
+        public void dealWithCustomAction(Context context, UMessage uMessage) {
+          super.dealWithCustomAction(context, uMessage);
+        }
+      };
+      this.mPushAgent.setNotificationClickHandler(notificationClickHandler);
       // this.mPushAgent.setDebugMode(true);
     }
   }
@@ -103,7 +128,30 @@ public class UmengPush extends CordovaPlugin {
     else if (action.equals("removeAlias")) {
       return removeAlias(args, callbackContext);
     }
+    else if (action.equals("getRemoteNotification")) {
+      return getRemoteNotification(args, callbackContext);
+    }
     return false;
+  }
+
+  protected boolean getRemoteNotification(CordovaArgs args, final CallbackContext callbackContext) {
+    mCallbackContext = callbackContext;
+    if (pendingNotification == null) {
+      try {
+        pendingNotification = new JSONObject("{}");
+      }
+      catch (JSONException e) {
+        mCallbackContext.error(e.getMessage());
+      }
+    }
+    sendNotification(pendingNotification);
+    return true;
+  }
+
+  private void sendNotification(JSONObject json) {
+    PluginResult result = new PluginResult(PluginResult.Status.OK, json);
+    result.setKeepCallback(true);
+    mCallbackContext.sendPluginResult(result);
   }
 
   protected boolean addTag(CordovaArgs args, final CallbackContext callbackContext) {
