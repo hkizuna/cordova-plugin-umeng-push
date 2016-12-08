@@ -149,6 +149,10 @@ public class UmengPush extends CordovaPlugin {
   }
 
   private void sendNotification(JSONObject json) {
+    if (mCallbackContext == null) {
+      pendingNotification = json;
+      return;
+    }
     PluginResult result = new PluginResult(PluginResult.Status.OK, json);
     result.setKeepCallback(true);
     mCallbackContext.sendPluginResult(result);
