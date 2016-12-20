@@ -6,6 +6,7 @@ import android.app.ActivityManager;
 import android.app.ActivityManager.RunningAppProcessInfo;
 import android.app.Application;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Process;
 import android.util.Log;
 
@@ -18,6 +19,8 @@ import com.umeng.message.entity.UMessage;
 import com.xiaomi.channel.commonutils.logger.LoggerInterface;
 import com.xiaomi.mipush.sdk.Logger;
 import com.xiaomi.mipush.sdk.MiPushClient;
+import com.xiaomi.mipush.sdk.MiPushMessage;
+import com.xiaomi.mipush.sdk.PushMessageHelper;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaArgs;
@@ -50,7 +53,7 @@ public class UmengPush extends CordovaPlugin {
   protected Context mContext;
 
   private CallbackContext mCallbackContext;
-  private JSONObject pendingNotification;
+  public static JSONObject pendingNotification;
 
   @Override
   protected void pluginInitialize() {
@@ -106,6 +109,21 @@ public class UmengPush extends CordovaPlugin {
   }
 
   @Override
+  public void onNewIntent(Intent intent) {
+    super.onNewIntent(intent);
+    MiPushMessage message = (MiPushMessage) intent.getSerializableExtra(PushMessageHelper.KEY_MESSAGE);
+    if (message != null && message.getExtra() != null) {
+      sendNotification(new JSONObject(message.getExtra()));
+    }
+  }
+
+  public static void setPendingNotification(MiPushMessage message) {
+    if (message != null && message.getExtra() != null) {
+      pendingNotification = new JSONObject(message.getExtra());
+    }
+  }
+
+  @Override
   public boolean execute(String action, CordovaArgs args, CallbackContext callbackContext) throws JSONException {
     if (action.equals("addTag")) {
       return addTag(args, callbackContext);
@@ -154,6 +172,7 @@ public class UmengPush extends CordovaPlugin {
       return;
     }
     PluginResult result = new PluginResult(PluginResult.Status.OK, json);
+    pendingNotification = null;
     result.setKeepCallback(true);
     mCallbackContext.sendPluginResult(result);
   }

@@ -55,4 +55,22 @@ module.exports = function (context) {
     data = data.replace(regex, str);
     fs.writeFileSync(cordovaGradleBuilderPath, data, "utf-8");
   });
+
+  var packagePath = packageName.replace(/\./g, "/");
+  var mainActivityPath = path.join(projectRoot, "platforms/android/src", packagePath, "MainActivity.java");
+  fs.readFile(mainActivityPath, {encoding: 'utf-8'}, function (err, data) {
+    if (err) {
+      throw err;
+    }
+
+    var importPattern = /import org\.apache\.cordova\.\*;\n\n/g;
+    var importStr = 'import org.apache.cordova.*;\nimport xwang.cordova.umeng.push.UmengPush;\nimport com.xiaomi.mipush.sdk.MiPushMessage;\nimport com.xiaomi.mipush.sdk.PushMessageHelper;\n\n';
+    data = data.replace(importPattern, importStr);
+
+    var pattern = /loadUrl\(launchUrl\);\n/;
+    var str = 'loadUrl(launchUrl);UmengPush.setPendingNotification((MiPushMessage) getIntent().getSerializableExtra(PushMessageHelper.KEY_MESSAGE));\n';
+    data = data.replace(pattern, str);
+
+    fs.writeFileSync(mainActivityPath, data, "utf-8");
+  });
 };
