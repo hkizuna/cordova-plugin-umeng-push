@@ -2,11 +2,10 @@ apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "23.0.2"
-    useLibrary 'org.apache.http.legacy'
+    buildToolsVersion '23.0.2'
 
     defaultConfig {
-        minSdkVersion 8
+        minSdkVersion 11
         targetSdkVersion 22
     }
 
@@ -16,8 +15,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
         }
         debug {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+
         }
     }
 
@@ -45,10 +43,14 @@ android {
         debug.setRoot('build-types/debug')
         release.setRoot('build-types/release')
     }
+
+    android {
+        lintOptions {
+            abortOnError false
+        }
+    }
 }
 
 dependencies {
-    // compile 'com.squareup.okio:okio:1.6.0'
-    // compile 'com.squareup.wire:wire-runtime:2.1.2'
     compile fileTree(dir: 'libs', include: ['*.jar'])
 }
