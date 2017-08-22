@@ -1,0 +1,31 @@
+
+{
+  "name": "cordova-plugin-umeng-push",
+  "version": "v1.0.0",
+  "cordova_name": "Umeng Push Plugin",
+  "description": "A cordova plugin, a JS version for Umeng Push SDK",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hkizuna/cordova-plugin-umeng-push.git"
+  },
+  "keywords": [
+    "cordova",
+    "phonegap",
+    "umeng",
+    "push"
+  ],
+  "engines": [],
+  "cordova": {
+    "id": "xwang.cordova.umeng.push.UmengPush",
+    "platforms": [
+      "ios",
+      "android"
+    ]
+  },
+  "author": "hkizuna",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/hkizuna/cordova-plugin-umeng-push/issues"
+  },
+  "homepage": "https://github.com/hkizuna/cordova-plugin-umeng-push#readme"
+}
