@@ -44,7 +44,7 @@
 
     <!-- umeng push -->
     <header-file src="src/ios/libs/UMessage_Sdk_1.5.0/UMessage.h" />
-    <source-file src="src/ios/libs/UMessage_Sdk_1.5.0/libUMessage_Sdk_1.5.0.a" framework="true" />
+    <source-file src="src/ios/libs/UMessage_Sdk_1.5.0/libUMessage_Sdk_1.5.0a.a" framework="true" />
 
     <!-- other required frameworks -->
     <framework src="libz.dylib" />
